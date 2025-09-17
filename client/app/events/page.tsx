@@ -154,7 +154,7 @@ const EventsPage = () => {
               Explore events
             </h1>
             <Link
-              href="/discover"
+              href="/Discover"
               className="flex items-center text-[#063168] hover:underline cursor-pointer text-xs sm:text-base"
             >
               <svg

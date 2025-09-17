@@ -31,7 +31,7 @@ export default function NavigationBar() {
   return (
     <>
       <nav className="w-full flex justify-between items-center pt-8 pb-7 px-6 md:px-12 text-[#154CB3] select-none">
-        <Link href={session ? "/discover" : "/"}>
+        <Link href={session ? "/Discover" : "/"}>
           <Image
             src={Logo}
             alt="Logo"

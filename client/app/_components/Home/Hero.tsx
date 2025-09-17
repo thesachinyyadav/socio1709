@@ -31,7 +31,7 @@ const Hero = () => {
     if (!session && !isLoading) {
       handleSignInWithGoogle();
     } else if (session && !isLoading) {
-      router.push("/discover");
+      router.push("/Discover");
     }
   };
 
@@ -89,7 +89,7 @@ const Hero = () => {
             {startTyping ? (
               <TypeAnimation
                 sequence={[
-                  "discover.",
+                  "Discover.",
                   2000,
                   "",
                   500,
