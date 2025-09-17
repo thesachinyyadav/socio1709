@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+:root {
+  --font-dm-sans: "DM Sans", system-ui, sans-serif;
+}
+
+.font-sans {
+  font-family: var(--font-dm-sans);
+}
