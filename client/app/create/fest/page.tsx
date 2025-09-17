@@ -149,8 +149,9 @@ const CustomDateInput: React.FC<CustomDateInputProps> = ({
         currentDateInLoop.getMonth(),
         currentDateInLoop.getDate()
       );
-      const isDisabled =
-        minDateAtMidnight && currentDateInLoopAtMidnight < minDateAtMidnight;
+      const isDisabled = Boolean(
+        minDateAtMidnight && currentDateInLoopAtMidnight < minDateAtMidnight
+      );
       dayElements.push(
         <button
           type="button"
@@ -717,42 +718,29 @@ const FullPageSpinner: React.FC<{ text: string }> = ({ text }) => (
   </div>
 );
 
-export default function CreateFest({
-  title = "",
-  openingDate = "",
-  closingDate = "",
-  detailedDescription = "",
-  department = [],
-  category = "",
-  contactEmail = "",
-  contactPhone = "",
-  organizingDept = "",
-  eventHeads: initialEventHeads = [],
-  // New props for edit mode
-  isEditMode = false,
-  existingImageFileUrl,
-  existingBannerFileUrl,
-  existingPdfFileUrl,
-}: CreateFestProps) {
+export default function CreateFest() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [formData, setFormData] = useState<CreateFestState>({
-    title,
-    openingDate,
-    closingDate,
-    detailedDescription,
-    department,
-    category,
-    contactEmail,
-    contactPhone,
-    organizingDept,
-    eventHeads: initialEventHeads,
+    title: "",
+    openingDate: "",
+    closingDate: "",
+    detailedDescription: "",
+    department: [],
+    category: "",
+    contactEmail: "",
+    contactPhone: "",
+    organizingDept: "",
+    eventHeads: [],
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false); // Used for delete operation
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingFestData, setIsLoadingFestData] = useState(false);
+  const [existingImageFileUrl, setExistingImageFileUrl] = useState<string | null>(null);
+  const [existingBannerFileUrl, setExistingBannerFileUrl] = useState<string | null>(null);
+  const [existingPdfFileUrl, setExistingPdfFileUrl] = useState<string | null>(null);
 
   const { session } = useAuth();
   const currentDateRef = useRef(new Date());
@@ -765,6 +753,7 @@ export default function CreateFest({
   const pathname = usePathname();
   const isEditModeFromPath = pathname.startsWith("/edit/fest");
   const festIdFromPath = isEditModeFromPath ? pathname.split("/").pop() : null;
+  const finalIsEditMode = isEditModeFromPath;
 
   useEffect(() => {
     if (isEditModeFromPath && festIdFromPath && session?.access_token) {
@@ -806,6 +795,9 @@ export default function CreateFest({
               eventHeads: data.fest.event_heads || [],
               organizingDept: data.fest.organizing_dept || "",
             });
+            setExistingImageFileUrl(data.fest.fest_image_url || null);
+            setExistingBannerFileUrl(data.fest.banner_url || null);
+            setExistingPdfFileUrl(data.fest.pdf_url || null);
           } else {
             throw new Error("Fest data not found in response.");
           }
@@ -896,7 +888,7 @@ export default function CreateFest({
               if (!inputDate) newErrors[name] = "Invalid date value";
               else if (
                 inputDate < currentDate &&
-                !isEditMode && // Use prop isEditMode here
+                !finalIsEditMode && // Use finalIsEditMode here
                 name === "openingDate"
               )
                 newErrors[name] = `${dateType} must be on or after today`;
@@ -984,7 +976,7 @@ export default function CreateFest({
       }
       setErrors(newErrors);
     },
-    [errors, formData.openingDate, formData.closingDate, isEditMode] // Use prop isEditMode here
+    [errors, formData.openingDate, formData.closingDate, finalIsEditMode] // Use finalIsEditMode here
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1025,7 +1017,7 @@ export default function CreateFest({
             if (!inputDate) errorMsg = "Invalid date value";
             else if (
               inputDate < currentDate &&
-              !isEditMode &&
+              !finalIsEditMode &&
               name === "openingDate"
             )
               errorMsg = `${dateType} must be on or after today`;
@@ -1090,7 +1082,7 @@ export default function CreateFest({
       }
     });
 
-    if (!imageFile && !isEditMode && !existingImageFileUrl) {
+    if (!imageFile && !finalIsEditMode && !existingImageFileUrl) {
       currentValidationErrors.imageFile = "Fest image is required";
     } else if (imageFile) {
       if (imageFile.size > 3 * 1024 * 1024)
@@ -1125,7 +1117,7 @@ export default function CreateFest({
           .from("fest-images")
           .upload(filePath, imageFile, {
             cacheControl: "3600",
-            upsert: isEditMode,
+            upsert: finalIsEditMode,
           });
 
         if (uploadError) {
@@ -1150,8 +1142,9 @@ export default function CreateFest({
         return;
       }
       setIsUploadingImage(false);
-    } else if (isEditMode && existingImageFileUrl && !imageFile) {
-    } else if (!imageFile && !isEditMode) {
+    } else if (finalIsEditMode && existingImageFileUrl && !imageFile) {
+      uploadedFestImageUrl = existingImageFileUrl;
+    } else if (!imageFile && !finalIsEditMode) {
       setErrors((prev) => ({
         ...prev,
         submit: "Fest image is required for new fests.",
@@ -1181,7 +1174,7 @@ export default function CreateFest({
       }
 
       let response;
-      if (isEditMode && festIdFromPath) {
+      if (finalIsEditMode && festIdFromPath) {
         response = await fetch(
           `http://localhost:8000/api/fests/${festIdFromPath}`,
           {
@@ -1208,7 +1201,7 @@ export default function CreateFest({
         const errorData = await response.json();
         throw new Error(
           errorData.error ||
-            `Failed to ${isEditMode ? "update" : "create"} fest.` // Use prop isEditMode here
+            `Failed to ${finalIsEditMode ? "update" : "create"} fest.` // Use finalIsEditMode here
         );
       }
 
@@ -1236,7 +1229,7 @@ export default function CreateFest({
         });
     } else {
       setImageFile(null);
-      if (!isEditMode || (isEditMode && !existingImageFileUrl)) {
+      if (!finalIsEditMode || (finalIsEditMode && !existingImageFileUrl)) {
         setErrors((prev) => ({
           ...prev,
           imageFile: "Fest image is required",
@@ -1305,11 +1298,9 @@ export default function CreateFest({
       ? new Date(parseYYYYMMDD(formData.openingDate)!)
       : new Date(minOpeningDate);
 
-  if (minClosingDate < currentDateRef.current && !isEditMode)
+  if (minClosingDate < currentDateRef.current && !finalIsEditMode)
     minClosingDate.setDate(currentDateRef.current.getDate());
   minClosingDate.setHours(0, 0, 0, 0);
-
-  const finalIsEditMode = isEditMode || isEditModeFromPath;
 
   const showMainLoader = (isLoadingFestData && finalIsEditMode) || isNavigating;
   const mainLoaderText = isLoadingFestData
@@ -1847,11 +1838,11 @@ export default function CreateFest({
                   )}
                   <button
                     type="submit"
-                    disabled={
+                    disabled={Boolean(
                       isSubmitting ||
                       isNavigating ||
                       (imageFile && !supabase && !finalIsEditMode)
-                    }
+                    )}
                     className={`cursor-pointer px-4 sm:px-6 py-2 sm:py-3 bg-[#154CB3] text-white rounded-full font-medium hover:bg-[#154cb3eb] transition-colors text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#154CB3] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center ${
                       isSubmitting ||
                       isNavigating ||

@@ -119,24 +119,7 @@ const EditPage = () => {
     );
   }
 
-  return (
-    <CreateFest
-      title={festData?.title}
-      openingDate={festData?.openingDate}
-      closingDate={festData?.closingDate}
-      detailedDescription={festData?.detailedDescription}
-      department={festData?.department}
-      category={festData?.category}
-      contactEmail={festData?.contactEmail}
-      contactPhone={festData?.contactPhone}
-      eventHeads={festData?.eventHeads}
-      organizingDept={festData?.organizingDept}
-      isEditMode={true}
-      existingImageFileUrl={existingImageFileUrl}
-      existingBannerFileUrl={existingBannerFileUrl}
-      existingPdfFileUrl={existingPdfFileUrl}
-    />
-  );
+  return <CreateFest />;
 };
 
 export default EditPage;

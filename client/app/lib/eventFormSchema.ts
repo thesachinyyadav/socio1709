@@ -108,6 +108,7 @@ export const eventFormSchema = z
       .regex(/^\d{10}$/, "Phone number must be 10 digits"),
     whatsappLink: z.string().url("Invalid URL").optional().or(z.literal("")),
     provideClaims: z.boolean().default(false),
+    sendNotifications: z.boolean().default(false),
 
     imageFile: fileSchema(
       MAX_FILE_SIZE_IMAGE,
@@ -141,6 +142,13 @@ export const eventFormSchema = z
       .optional(),
 
     scheduleItems: z.array(scheduleItemSchema).optional(),
+    eventHeads: z
+      .array(
+        z.object({
+          value: z.string().min(1, "Event head cannot be empty"),
+        })
+      )
+      .optional(),
   })
   .refine(
     (data) => {

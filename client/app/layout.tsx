@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import NavigationBar from "./_components/NavigationBar";
@@ -8,35 +7,14 @@ import {
   EventsProvider,
   EventForCard,
   CarouselDisplayImage,
+  FetchedEvent,
 } from "../context/EventContext";
-
-const DMSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "SOCIO",
 };
 
-interface FetchedEvent {
-  id: number;
-  event_id: string;
-  title: string;
-  event_date: string | null;
-  event_time: string | null;
-  venue: string | null;
-  category: string | null;
-  department_access: string[] | string | null;
-  claims_applicable: boolean | null;
-  registration_fee: number | null;
-  event_image_url: string | null;
-  banner_url: string | null;
-  created_at: string;
-  organizing_dept: string | null;
-  fest: string;
-  created_by: string;
-}
+
 
 const deriveTags = (event: FetchedEvent): string[] => {
   const tags: string[] = [];
@@ -66,6 +44,7 @@ const getRandomEvents = (
 const transformToEventCardData = (event: FetchedEvent): EventForCard => {
   return {
     id: event.id,
+    event_id: event.event_id,
     title: event.title,
     fest: event.fest,
     date: event.event_date,
@@ -185,7 +164,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${DMSans.variable} font-sans antialiased bg-[#FFFFFF] text-[#101010]`}
+        className={`font-sans antialiased bg-[#FFFFFF] text-[#101010]`}
       >
         <AuthProvider>
           <EventsProvider
