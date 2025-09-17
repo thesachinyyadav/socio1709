@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import moment from "moment";
 import { EventsSection } from "../_components/Discover/EventsSection";
 import { FullWidthCarousel } from "../_components/Discover/ImageCarousel";
 import { FestsSection } from "../_components/Discover/FestSection";
@@ -172,6 +173,25 @@ const DiscoverPage = () => {
     setIsDropdownOpen(false);
   };
 
+  const mapEventForCardToEvent = (eventForCard: any) => ({
+    ...eventForCard,
+    date: eventForCard.date || undefined,
+    time: eventForCard.time || undefined,
+    location: eventForCard.location || undefined,
+    tags: eventForCard.tags || [],
+  });
+
+  const mapFestToFestSection = (fest: any) => ({
+    fest_id: fest.fest_id,
+    fest_title: fest.title || fest.fest_title,
+    organizing_dept: fest.organizing_dept,
+    description: fest.description,
+    dateRange: `${moment(fest.opening_date).format("MMM DD")} - ${moment(fest.closing_date).format("MMM DD, YYYY")}`,
+    fest_image_url: fest.fest_image_url,
+    opening_date: new Date(fest.opening_date),
+    closing_date: new Date(fest.closing_date),
+  });
+
   return (
     <div className="min-h-screen bg-white">
       <main className="container mx-auto px-4 py-6 max-w-7xl pb-16">
@@ -288,7 +308,7 @@ const DiscoverPage = () => {
               trendingEventsDataFromContext.length > 0 ? (
                 <EventsSection
                   title="Trending events"
-                  events={trendingEventsDataFromContext}
+                  events={trendingEventsDataFromContext.map(mapEventForCardToEvent)}
                   baseUrl="event"
                 />
               ) : (
@@ -314,7 +334,7 @@ const DiscoverPage = () => {
           {!isLoadingFests && !errorFests && (
             <FestsSection
               title="Upcoming fests"
-              fests={upcomingFests || []}
+              fests={(upcomingFests || []).map(mapFestToFestSection)}
               showAll={true}
               baseUrl="fest"
             />
@@ -344,7 +364,7 @@ const DiscoverPage = () => {
             upcomingEventsDataFromContext.length > 0 ? (
               <EventsSection
                 title="Upcoming events"
-                events={upcomingEventsDataFromContext}
+                events={upcomingEventsDataFromContext.map(mapEventForCardToEvent)}
                 showAll={false}
                 baseUrl="event"
               />

@@ -111,7 +111,9 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
       name={name}
       control={control}
       render={({ field }) => {
-        const selectedValues = Array.isArray(field.value) ? field.value : [];
+        const selectedValues: string[] = Array.isArray(field.value) 
+          ? field.value.filter((val): val is string => typeof val === 'string')
+          : [];
 
         const handleCheckboxChange = (optionValue: string) => {
           const newValues = selectedValues.includes(optionValue)
@@ -308,7 +310,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     const month = displayMonth.getMonth();
     const numDays = daysInMonth(year, month);
     const firstDay = firstDayOfMonth(year, month);
-    const dayElements: JSX.Element[] = [];
+    const dayElements: React.JSX.Element[] = [];
 
     const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
     dayElements.push(
@@ -345,10 +347,11 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
         currentDateInLoop.getDate()
       );
 
-      const isDisabled =
+      const isDisabled = Boolean(
         (minDateAtMidnight &&
           currentDateInLoopAtMidnight < minDateAtMidnight) ||
-        (maxDateAtMidnight && currentDateInLoopAtMidnight > maxDateAtMidnight);
+        (maxDateAtMidnight && currentDateInLoopAtMidnight > maxDateAtMidnight)
+      );
 
       dayElements.push(
         <button
@@ -586,7 +589,7 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
     currentDisplayValue: number,
     onSelectValue: (value: number) => void,
     type: "hour" | "minute",
-    listRef: React.RefObject<HTMLDivElement>
+    listRef: React.RefObject<HTMLDivElement | null>
   ) => (
     <div
       ref={listRef}
