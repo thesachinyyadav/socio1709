@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import NavigationBar from "./_components/NavigationBar";
@@ -9,11 +8,6 @@ import {
   EventForCard,
   CarouselDisplayImage,
 } from "../context/EventContext";
-
-const DMSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "SOCIO",
@@ -185,7 +179,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${DMSans.variable} font-sans antialiased bg-[#FFFFFF] text-[#101010]`}
+        className={`font-sans antialiased bg-[#FFFFFF] text-[#101010]`}
       >
         <AuthProvider>
           <EventsProvider
