@@ -7,30 +7,14 @@ import {
   EventsProvider,
   EventForCard,
   CarouselDisplayImage,
+  FetchedEvent,
 } from "../context/EventContext";
 
 export const metadata: Metadata = {
   title: "SOCIO",
 };
 
-interface FetchedEvent {
-  id: number;
-  event_id: string;
-  title: string;
-  event_date: string | null;
-  event_time: string | null;
-  venue: string | null;
-  category: string | null;
-  department_access: string[] | string | null;
-  claims_applicable: boolean | null;
-  registration_fee: number | null;
-  event_image_url: string | null;
-  banner_url: string | null;
-  created_at: string;
-  organizing_dept: string | null;
-  fest: string;
-  created_by: string;
-}
+
 
 const deriveTags = (event: FetchedEvent): string[] => {
   const tags: string[] = [];
@@ -60,6 +44,7 @@ const getRandomEvents = (
 const transformToEventCardData = (event: FetchedEvent): EventForCard => {
   return {
     id: event.id,
+    event_id: event.event_id,
     title: event.title,
     fest: event.fest,
     date: event.event_date,

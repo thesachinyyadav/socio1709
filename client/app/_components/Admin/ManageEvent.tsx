@@ -740,7 +740,7 @@ export default function EventForm({
     watch,
     reset,
   } = useForm<EventFormData>({
-    resolver: zodResolver(eventFormSchema),
+    resolver: zodResolver(eventFormSchema) as any, // Temporary fix for type conflict
     defaultValues: {
       eventTitle: "",
       eventDate: "",
@@ -1135,7 +1135,7 @@ export default function EventForm({
                         placeholder="YYYY-MM-DD"
                         minDate={
                           watchedEventDate && parseYYYYMMDD(watchedEventDate)
-                            ? parseYYYYMMDD(watchedEventDate)
+                            ? parseYYYYMMDD(watchedEventDate) || undefined
                             : new Date()
                         }
                       />
@@ -1173,7 +1173,7 @@ export default function EventForm({
                     options={departmentOptions}
                     placeholder="Select departments"
                     label="Department access:"
-                    error={errors.department}
+                    error={errors.department as FieldError | undefined}
                     required
                   />
                   <CustomDropdown
@@ -1221,7 +1221,7 @@ export default function EventForm({
                         minDate={new Date()}
                         maxDate={
                           watchedEventDate && parseYYYYMMDD(watchedEventDate)
-                            ? parseYYYYMMDD(watchedEventDate)
+                            ? parseYYYYMMDD(watchedEventDate) || undefined
                             : undefined
                         }
                       />

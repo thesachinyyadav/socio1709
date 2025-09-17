@@ -149,8 +149,9 @@ const CustomDateInput: React.FC<CustomDateInputProps> = ({
         currentDateInLoop.getMonth(),
         currentDateInLoop.getDate()
       );
-      const isDisabled =
-        minDateAtMidnight && currentDateInLoopAtMidnight < minDateAtMidnight;
+      const isDisabled = Boolean(
+        minDateAtMidnight && currentDateInLoopAtMidnight < minDateAtMidnight
+      );
       dayElements.push(
         <button
           type="button"
@@ -752,6 +753,7 @@ export default function CreateFest() {
   const pathname = usePathname();
   const isEditModeFromPath = pathname.startsWith("/edit/fest");
   const festIdFromPath = isEditModeFromPath ? pathname.split("/").pop() : null;
+  const finalIsEditMode = isEditModeFromPath;
 
   useEffect(() => {
     if (isEditModeFromPath && festIdFromPath && session?.access_token) {
@@ -1300,8 +1302,6 @@ export default function CreateFest() {
     minClosingDate.setDate(currentDateRef.current.getDate());
   minClosingDate.setHours(0, 0, 0, 0);
 
-  const finalIsEditMode = isEditModeFromPath;
-
   const showMainLoader = (isLoadingFestData && finalIsEditMode) || isNavigating;
   const mainLoaderText = isLoadingFestData
     ? "Loading fest details..."
@@ -1838,11 +1838,11 @@ export default function CreateFest() {
                   )}
                   <button
                     type="submit"
-                    disabled={
+                    disabled={Boolean(
                       isSubmitting ||
                       isNavigating ||
                       (imageFile && !supabase && !finalIsEditMode)
-                    }
+                    )}
                     className={`cursor-pointer px-4 sm:px-6 py-2 sm:py-3 bg-[#154CB3] text-white rounded-full font-medium hover:bg-[#154cb3eb] transition-colors text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#154CB3] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center ${
                       isSubmitting ||
                       isNavigating ||

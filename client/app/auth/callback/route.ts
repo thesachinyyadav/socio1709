@@ -16,7 +16,9 @@ export async function GET(request: NextRequest) {
   }
 
   const cookieStore = await cookies();
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  const supabase = createRouteHandlerClient({ 
+    cookies: () => cookieStore as any // Type assertion for Next.js 15 compatibility
+  });
 
   try {
     const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(
@@ -59,7 +61,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Unexpected error in auth callback:", error);
     const supabaseClient = createRouteHandlerClient({
-      cookies: () => cookieStore,
+      cookies: () => cookieStore as any, // Type assertion for Next.js 15 compatibility
     });
     await supabaseClient.auth.signOut();
     return NextResponse.redirect(`${APP_URL}/?error=callback_exception`);
